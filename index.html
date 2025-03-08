@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anime TCG Game</title>
+  <link rel="stylesheet" href="src/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Inline script to ensure card functions are available -->
+  <script>
+    // Fallback card functions in case cards.js fails to load
+    if (!window.getRandomCardBase) {
+      window.getRandomCardBase = function() {
+        console.log("Using fallback card generator");
+        return {
+          id: 0,
+          name: "Fallback Card",
+          rarity: "Common",
+          edition: 1,
+          image: "/placeholder.svg?height=300&width=220",
+        };
+      };
+    }
+    
+    if (!window.getNextPrintNumber) {
+      window.getNextPrintNumber = function() {
+        return 9999;
+      };
+    }
+  </script>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Anime TCG</h1>
+      <div class="user-info">
+        <!-- This will be populated by JavaScript after login -->
+        <div id="user-display">
+          <span id="username">Guest</span>
+          <button id="login-btn">Login</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="game-container">
+        <!-- Timer for next card generation -->
+        <div class="timer-container">
+          <h2>Next Card Generation</h2>
+          <div id="timer">00:00</div>
+          <button id="generate-btn" class="primary-btn">Generate Cards</button>
+          <p class="timer-info">Cards will automatically generate when the timer reaches 00:00</p>
+        </div>
+
+        <!-- Card selection area (hidden initially) -->
+        <div id="card-selection" class="hidden">
+          <h2>Choose One Card</h2>
+          <div class="cards-container">
+            <div class="card" data-index="0">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img src="placeholder.svg" alt="Card Front">
+                </div>
+                <div class="card-back">
+                  <div class="card-info">
+                    <h3 class="card-name">Card Name</h3>
+                    <p class="card-rarity">Rarity</p>
+                    <p class="card-edition">Edition #1</p>
+                    <p class="card-print">Print #0000</p>
+                    <p class="card-id">ID: XXXX-XXXX-XXXX</p>
+                  </div>
+                </div>
+              </div>
+              <button class="select-btn">Select</button>
+            </div>
+            <div class="card" data-index="1">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img src="placeholder.svg" alt="Card Front">
+                </div>
+                <div class="card-back">
+                  <div class="card-info">
+                    <h3 class="card-name">Card Name</h3>
+                    <p class="card-rarity">Rarity</p>
+                    <p class="card-edition">Edition #1</p>
+                    <p class="card-print">Print #0000</p>
+                    <p class="card-id">ID: XXXX-XXXX-XXXX</p>
+                  </div>
+                </div>
+              </div>
+              <button class="select-btn">Select</button>
+            </div>
+            <div class="card" data-index="2">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img src="placeholder.svg" alt="Card Front">
+                </div>
+                <div class="card-back">
+                  <div class="card-info">
+                    <h3 class="card-name">Card Name</h3>
+                    <p class="card-rarity">Rarity</p>
+                    <p class="card-edition">Edition #1</p>
+                    <p class="card-print">Print #0000</p>
+                    <p class="card-id">ID: XXXX-XXXX-XXXX</p>
+                  </div>
+                </div>
+              </div>
+              <button class="select-btn">Select</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collection view (hidden initially) -->
+        <div id="collection-view" class="hidden">
+          <h2>Your Collection</h2>
+          <div class="collection-filters">
+            <select id="filter-edition">
+              <option value="all">All Editions</option>
+              <option value="1">Edition 1</option>
+            </select>
+            <select id="filter-rarity">
+              <option value="all">All Rarities</option>
+              <option value="common">Common</option>
+              <option value="uncommon">Uncommon</option>
+              <option value="rare">Rare</option>
+              <option value="ultra-rare">Ultra Rare</option>
+            </select>
+            <button id="sort-btn">Sort by Print #</button>
+          </div>
+          <div id="collection-cards" class="collection-grid">
+            <!-- Cards will be added here dynamically -->
+          </div>
+          <button id="back-from-collection" class="secondary-btn">Back</button>
+        </div>
+
+        <!-- Inventory view (hidden initially) -->
+        <div id="inventory-view" class="hidden">
+          <h2>Your Inventory</h2>
+          <div class="inventory-items">
+            <div class="inventory-item">
+              <img src="gold-icon.svg" alt="Gold">
+              <div class="inventory-details">
+                <h3>Gold</h3>
+                <p id="gold-amount">0</p>
+              </div>
+            </div>
+            <div class="inventory-item">
+              <img src="ticket-icon.svg" alt="Tickets">
+              <div class="inventory-details">
+                <h3>Tickets</h3>
+                <p id="ticket-amount">0</p>
+              </div>
+            </div>
+          </div>
+          <button id="back-from-inventory" class="secondary-btn">Back</button>
+        </div>
+
+        <!-- Vote view (hidden initially) -->
+        <div id="vote-view" class="hidden">
+          <h2>Vote for Tickets</h2>
+          <p>Vote for our game on these platforms to earn 2 tickets per vote!</p>
+          <div class="vote-options">
+            <a href="#" class="vote-option" data-site="site1">
+              <img src="vote-site1.svg" alt="Vote Site 1">
+              <span>Vote Site 1</span>
+            </a>
+            <a href="#" class="vote-option" data-site="site2">
+              <img src="vote-site2.svg" alt="Vote Site 2">
+              <span>Vote Site 2</span>
+            </a>
+          </div>
+          <p class="vote-cooldown">You can vote again in: <span id="vote-timer">24:00:00</span></p>
+          <button id="back-from-vote" class="secondary-btn">Back</button>
+        </div>
+
+        <!-- Daily rewards view (hidden initially) -->
+        <div id="daily-view" class="hidden">
+          <h2>Daily Rewards</h2>
+          <div class="daily-reward">
+            <img src="gold-icon.svg" alt="Gold">
+            <div class="daily-details">
+              <h3>Daily Gold</h3>
+              <p>Claim <span id="daily-gold-amount">350</span> gold!</p>
+            </div>
+            <button id="claim-daily" class="primary-btn">Claim</button>
+          </div>
+          <p class="daily-cooldown">Next daily reward in: <span id="daily-timer">24:00:00</span></p>
+          <button id="back-from-daily" class="secondary-btn">Back</button>
+        </div>
+      </div>
+
+      <div class="game-nav">
+        <button id="collection-btn" class="nav-btn">
+          <img src="collection-icon.svg" alt="Collection">
+          Collection
+        </button>
+        <button id="inventory-btn" class="nav-btn">
+          <img src="inventory-icon.svg" alt="Inventory">
+          Inventory
+        </button>
+        <button id="vote-btn" class="nav-btn">
+          <img src="vote-icon.svg" alt="Vote">
+          Vote
+        </button>
+        <button id="daily-btn" class="nav-btn">
+          <img src="daily-icon.svg" alt="Daily">
+          Daily
+        </button>
+      </div>
+    </main>
+
+    <div id="notification" class="notification hidden">
+      <p id="notification-text"></p>
+    </div>
+  </div>
+
+  <!-- Load scripts in the correct order -->
+  <script src="/src/app.js"></script>
+  <script src="/src/card.js"></script>
+  <script src="/src/timer.js"></script>
+</body>
+</html>
+
