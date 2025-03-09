@@ -61,7 +61,7 @@
       const now = Date.now();
       const lastGeneration = gameState.user.lastCardGeneration;
       // Make sure this matches the cooldown time in app.js
-      const cooldownTime = 20 * 1000; // 20 seconds for testing (change to 20 * 60 * 1000 for production)
+      const cooldownTime = 300 * 1000; // 5 minutes for testing (change to 20 * 60 * 1000 for production)
       const timeElapsed = now - lastGeneration;
       const timeRemaining = cooldownTime - timeElapsed;
   
